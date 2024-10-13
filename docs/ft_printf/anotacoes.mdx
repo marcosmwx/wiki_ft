@@ -1,0 +1,105 @@
+# Anotações
+
+## Aprendendo mais um pouco antes de iniciar
+
+Para entender um pouco sobre a biblioteca que nos foi mostrada para usar na ft_printf.
+
+```C
+#include <strarg.h>
+```
+Biblioteca que nos mostra os "va".
+
+O prefixo va em funções como ```va_list, va_start, va_arg e va_end``` vem de "variable arguments" (argumentos variáveis). Essas funções e tipos estão relacionadas ao manejo de uma quantidade variável de argumentos em uma função, ou seja, quando a função pode receber um número indefinido de parâmetros após os definidos.
+
+Aqui está o significado das siglas:
+```
+    va_list: "Variable Argument List" (lista de argumentos variáveis).
+    va_start: "Variable Argument Start" (início da lista de argumentos variáveis).
+    va_arg: "Variable Argument" (acesso ao próximo argumento variável).
+    va_end: "Variable Argument End" (fim da manipulação da lista de argumentos variáveis).
+    va_copy: "Variable Argument Copy" (cópia da lista de argumentos variáveis).
+```
+
+OK, mas o que seria "receber um número indefinido de parâmetros após os definidos"?
+
+Analise este codigo:
+```C
+#include <stdarg.h>  // Biblioteca necessária para manipular argumentos variáveis
+#include <stdio.h>
+
+// Função que soma uma quantidade variável de inteiros
+int soma_int(int n, ...) {
+    va_list lista;  // Declara uma variável para armazenar a lista de argumentos
+    int i;          // Contador
+    int s;          // Variável para armazenar a soma
+
+    va_start(lista, n);  // Inicializa a lista de argumentos a partir do último argumento fixo (n)
+
+    i = 1;  // Inicializa o contador
+    s = 0;  // Inicializa a soma
+
+    // Loop que percorre cada argumento variável
+    while (i <= n) {
+        s = s + va_arg(lista, int);  // Obtém o próximo argumento e o soma
+        i++;  // Incrementa o contador
+    }
+
+    va_end(lista);  // Finaliza o uso da lista de argumentos
+    return s;  // Retorna a soma dos argumentos
+}
+
+int main() {
+    int soma;
+
+    // Chama a função com 3 argumentos variáveis: 2, 3, 4
+    soma = soma_int(3, 2, 3, 4);
+    printf("Soma com 3 parametros: %d\n", soma);  // Imprime o resultado da soma
+}
+
+```
+
+agora vamos em partes :
+
+## O que é va_list?
+
+va_list é um tipo de dado que serve para gerenciar a lista de argumentos variáveis. Quando você usa ```...``` nos parâmetros da função,
+está dizendo que a função pode receber um número indefinido de argumentos.
+Como você não sabe a quantidade e o tipo exato desses argumentos na definição da função, você precisa de um jeito de acessar cada um deles.
+É aí que entra va_list e algumas funções específicas que ajudam a lidar com esses argumentos.
+
+### Vamos aos detalhes:
+
+### va_start
+
+```C
+va_start(lista, n); // va_start(variavel que vai guardar a lista, a partir de onde começa)
+```
+
+Esta função inicializa a lista de argumentos variáveis.
+O primeiro argumento é o nome da variável que vai guardar a lista (lista), e o segundo argumento (n) é o último parâmetro definido na função.
+Isso é necessário porque a função precisa saber de onde começar a pegar os argumentos variáveis ```(aqueles que vêm depois de n)```.
+
+
+### va_arg
+
+```C
+va_arg(lista, int);
+```
+
+Esta função é usada dentro do loop para acessar cada argumento variável.
+A cada chamada de va_arg, ele vai pegando o próximo argumento da lista e o interpretando como sendo do tipo que você especifica (no caso, int).
+Ou seja, você está somando cada número inteiro passado para a função.
+
+:::danger[Atenção]
+
+Quando você chama va_arg(lista, int);, ele pega o próximo argumento da lista e, automaticamente, avança para o seguinte. Sem precisar de iteirador ou Loops
+
+:::
+
+### va_end
+```C
+va_end(lista);
+```
+
+Depois de terminar de usar a lista de argumentos, você precisa finalizar o processo com va_end.
+Isso é importante porque, internamente, o sistema pode usar recursos que precisam ser liberados ou reinicializados quando você termina de usar a lista.
