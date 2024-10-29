@@ -1,0 +1,114 @@
+---
+sidebar_position: 3
+---
+
+# Instalação do Debian 🌀
+
+#### Instruções basicas de como instalar o Debian na VirtualBox
+
+1. Selecione a opção `install` para não exibir a interface gráfica.
+
+![debian-install](./img/debianinstall.png)
+
+2. Selecione o idioma, preferencial que seja `Ingles`
+
+![debian-en](./img/debian-en.png)
+
+3. Selecione o Páis ou Zona, no meu caso escolhi `Other`
+
+![debian-en](./img/debian-lg.png)
+
+4. Como coloquei ```Other``` preciso indicar o continente, neste caso escolhi ```South America``` e como País escolhi Brasil 🇧🇷 "HU3"
+
+![debian-en](./img/continent.png)
+
+5. Para sistema de representação de texto, selecione `United State - en_US.UTF8` e `America English` para configurações de teclado.
+
+![debian-en](./img/en-utf8.png)
+
+6. Neste passo devemos escolher o `Host Name` da máquina, que deve ser o seu login seguido de 42.
+
+![debian](./img/hostname.png)
+
+7. Deixaremos esta secção vazia, pois o subject não menciona nada sobre Domain Name.
+
+![debian](./img/domain.png)
+
+8. Temos de definir uma palavra-passe para a conta de administração do sistema. Salve essa senha em um bloco de notas ou tire uma foto, pois iremos utilizá-la. Se quiser ver a palavra-passe para se certificar de que a digitou correctamente, introduza na tabulação a opção `Show Password in Clear` deve carregar na barra de espaço e a chave será mostrada.
+
+![debian](./img/pass.png)
+
+9. Escolhemos o nome do nosso novo utilizador. Como o subject indica que temos de criar um utilizador adicional que não seja root com o nosso login, por este motivo chamarei ao meu novo utilizador marcosmwx. Colocamos a senha e a confirmação de senha para esse utilizardor novo.
+
+10. Selecionamos o fuso-horario (São Paulo).
+
+![zone](./img/zone.png)
+
+11. Vamos escolher a terceira opção `Guied - use entire disk and set up encrypted LVM` uma vez que o subject nos diz que devem ser divisórias encriptadas. Se quiser fazer o bónus, deve clicar em Manual
+
+![disk](./img/diskone.png)
+
+12. Seleccione o disco em que pretende particionar (deve haver apenas um disco).
+
+![disk](./img/disktwo.png)
+
+13. Uma vez escolhido o disco, devemos parti-lo conforme solicitado. Para o fazermos correctamente, temos de seleccionar a segunda opção `Separate /home partition`.
+
+![disk](./img/diskt.png)
+
+14. Vamos escolher a opção Yes para que as alterações sejam escritas em disco e o gestor de volume lógico (LVM) possa ser configurado.
+
+![disk](./img/diskf.png)
+
+15. Clicamos em Cancel, pois não é necessário apagar os dados no disco.
+16. Mais uma vez teremos que definir uma senha, desta vez será a frase de encriptação. Como mencionei anteriormente, terá que repetir o processo e deverá escrevê-la, pois será importante no futuro.
+
+![disk](./img/diskg.png)
+
+17. Nesta etapa devemos inserir a quantidade de volume que utilizaremos para a partição guiada. Devemos inserir o máximo ou o tamanho máximo disponível no meu caso é 12,4 GB.
+
+![disk](./img/diskh.png)
+
+18.  Para finalizar a partição e escrever as alterações no disco, clicaremos na opção `Finish partitioning and write changes to disk`.
+
+![disk](./img/diski.png)
+
+19.  Seleccione a opção `Yes` para continuar e confirmar que não queremos fazer mais nenhuma alteração ao disco.
+
+![disk](./img/diskk.png)
+
+20. Escolhemos a opção `No` porque não precisamos de quaisquer pacotes adicionais.
+
+![disk](./img/diskl.png)
+
+21. Escolher o país
+
+![debian](./img/debianbrbr.png)
+
+22. Escolher `deb.debian.org` pois este é o recomendado pelo debian e o padrão.
+
+![debian](./img/debianorg.png)
+
+23. Deixe esta opção vazia e clique em Continue. Não vamos precisar fazer uma configuração de proxy.
+
+![debian](./img/debianproxy.png)
+
+24. Escolhemos a opção No porque não queremos que os criadores vejam as nossas estatísticas, mesmo que estas sejam anónimas.
+
+![debian](./img/debian-pop.png)
+
+25.  Remover todas as opções de software (com a barra de espaço) e clicar em Continue.
+
+![debian](./img/deb-soft.png)
+
+26. Vamos seleccionar Yes para instalar [GRUB boot](https://es.wikipedia.org/wiki/GNU_GRUB) no disco rígido
+
+![debian](./img/gru.png)
+
+27. Escolha o dispositivo para a instalação do bootloader ``/dev/sda (ata_VBOX_HARDDISK)``.
+
+![debian](./img/grub-pc.png)
+
+28. Vamos dar Continue para terminar a instalação.
+
+![debian](./img/complete.png)
