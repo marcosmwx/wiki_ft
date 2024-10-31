@@ -1,0 +1,117 @@
+# Peer-to-Peer
+
+## Tips do que sera perguntado e o que responder
+
+### Visão geral do projeto
+
+#### A pessoa avaliada deve simplesmente explicar:
+
+1. O funcionamento básico de sua máquina virtual
+
+2. A escolha do sistema operacional
+
+3. Diferenças básicas entre Rocky e Debian
+
+4. Os benefícios das máquinas virtuais
+
+5. Se o sistema operacional escolhido é o Rocky, eles devem explicar o que são SELinux e DNF.
+
+6. Se o sistema operacional escolhido é o Debian, eles devem explicar a diferença entre aptitude e apt, e o que APPArmor é. Durante a defesa, um script deve exibir informações a cada 10 minutos. Sua operação será verificada em detalhes mais tarde. Se as explicações não forem claras, a avaliação pára aqui.
+
+#### Configuração simples
+
+Lembrete: assim que você precisar de ajuda para verificar um ponto, a pessoa avaliada deve ser capaz de ajudá-lo.
+
+1. Verifique se a máquina não tem um ambiente gráfico na inicialização. Uma senha será solicitada antes de qualquer tentativa de conexão nesta máquina. Faça login com um usuário não-root. Verifique se a palavra-passe escolhida respeita as regras impostas no assunto. Então, com a ajuda do avaliador, certifique-se de que:
+
+2. O sistema operacional escolhido é de fato Debian ou Rocky
+
+3. O serviço UFW é lançado corretamente
+
+4. O serviço SSH é lançado corretamente. Se algo não funciona como esperado ou não é claramente explicado, a avaliação pára aqui.
+
+#### Usuário
+
+Lembrete: assim que você precisar de ajuda para verificar um ponto, a pessoa avaliada deve ser capaz de ajudá-lo. O subject exige que um usuário com o nome de login da pessoa avaliada esteja presente na máquina virtual. Verifique se esse usuário foi adicionado e que eles pertencem aos grupos "sudo" e "user42". Garantir que as regras impostas no subject relativas à política de senha tenham sido implementadas seguindo as etapas abaixo. Primeiro, crie um novo usuário. Atribua uma senha de sua escolha, respeitando as regras do assunto. A pessoa avaliada deve agora explicar como foi capaz de implementar as regras solicitadas em sua máquina virtual. Normalmente, um ou dois arquivos teriam sido modificados. Se houver algum problema, a avaliação pára aqui.
+
+1. Agora que você tem um novo usuário, peça à pessoa avaliada para criar um grupo chamado "avaliar" na sua frente e atribuí-lo a este usuário.
+
+2. Finalmente, verifique se este usuário realmente pertence ao grupo "avaliador".
+
+3. Para finalizar, peça à pessoa avaliada que explique o propósito desta política de senha, bem como as vantagens e desvantagens de sua implementação. Claro, responder que é porque o subject exige que não conta.
+
+:::danger[danger]
+Se algo não funciona como esperado ou não é claramente explicado, a avaliação pára aqui.
+:::
+
+#### Nome de host e partições
+
+Lembrete: assim que você precisar de ajuda para verificar um ponto, a pessoa avaliada deve ser capaz de ajudá-lo.
+
+1. Verifique se o nome do host da máquina é formatado da seguinte forma: login42 (login da pessoa avaliada).
+
+2. Altere este nome de host substituindo o login pelo seu e, em seguida, reinicie a máquina. Se ao reiniciar, o nome do host não tiver sido atualizado, a avaliação acaba aqui.
+
+3. Agora você pode restaurar o nome do host original da máquina.
+
+4. Pergunte à pessoa avaliada como exibir as partições de sua máquina virtual.
+
+5. Compare a saída com o exemplo dado no assunto. Nota: se a pessoa avaliada tiver feito os bônus, você deve consultar o exemplo da parte de bônus.
+
+6. Esta parte é uma oportunidade para discutir partições! A pessoa avaliada deve dar-lhe uma breve explicação de como o LVM funciona e por que é benéfico.
+
+:::danger[danger]
+Se algo não funciona como esperado ou não é claramente explicado, a avaliação pára aqui.
+:::
+
+#### SUDO (tradução)
+
+Lembrete: assim que você precisar de ajuda para verificar um ponto, a pessoa avaliada deve ser capaz de ajudá-lo.
+
+1. Verifique se o programa "sudo" está instalado na máquina virtual.
+
+2. A pessoa avaliada deve agora mostrar como atribuir seu novo usuário ao grupo "sudo".
+
+3. O subject impõe regras rígidas para o sudo. A pessoa avaliada deve primeiro explicar o propósito e a operação do sudo com exemplos de sua escolha. Em seguida, devem demonstrar a implementação das regras impostas pelo sujeito.
+
+4. Verifique se o diretório "/var/log/sudo/" existe e contém pelo menos um arquivo. Verifique o conteúdo dos arquivos neste diretório; você deve ver um histórico de comandos usados com sudo. Finalmente, tente executar um comando via sudo. Verifique se o(s) arquivo(s) no diretório "/var/log/sudo/" foram atualizados. Se algo não funciona como esperado ou não é claramente explicado, a avaliação pára aqui.   
+
+#### UFW / Firewall
+
+Lembrete: assim que você precisar de ajuda para verificar um ponto, a pessoa avaliada deve ser capaz de ajudá-lo.
+
+1. Verifique se o programa "UFW" (ou "Firewalld" para o rocky) está instalado na máquina virtual.
+
+2. Verifique se ele está funcionando corretamente.
+
+3. A pessoa avaliada deve dar-lhe uma explicação básica do que UFW (ou "Firewalld") é e por que é importante usá-lo.
+
+4. Listar as regras ativas em UFW (ou "Firewalld"). Deve haver uma regra para a porta 4242.
+
+5. Adicione uma nova regra à porta aberta 8080. Verifique se ele foi adicionado listando as regras ativas.
+
+6. Finalmente, com a ajuda da pessoa avaliada, exclua esta nova regra. Se algo não funciona como esperado ou não é claramente explicado, a avaliação pára aqui.
+
+#### SSH (em inglês)
+
+Lembrete: assim que você precisar de ajuda para verificar um ponto, a pessoa avaliada deve ser capaz de ajudá-lo.
+
+1. Verifique se o serviço SSH está instalado na máquina virtual.
+
+2. Verifique se ele está funcionando corretamente.
+
+3. A pessoa avaliada deve dar-lhe uma explicação básica do que é SSH e por que é importante usá-lo.
+
+4. Verifique se o serviço SSH usa apenas a porta 4242.
+
+5. A pessoa avaliada deve ajudá-lo a usar o SSH para se conectar com o novo usuário criado. Para isso, você pode usar uma chave ou uma senha simples, dependendo da pessoa avaliada. Claro, você deve garantir que o SSH não possa ser usado com o usuário "root", conforme indicado no assunto. Se algo não funciona como esperado ou não é claramente explicado, a avaliação pára aqui.
+
+#### Monitoramento de scripts
+
+Lembrete: assim que você precisar de ajuda para verificar um ponto, a pessoa avaliada deve ser capaz de ajudá-lo. A pessoa avaliada deve simplesmente explicar:
+
+1. O funcionamento do seu script, exibindo o seu código
+
+2. O que é "cron"
+
+3. Como eles configuraram seu script para executar a cada 10 minutos a partir do lançamento do servidor. Uma vez que o bom funcionamento do script é verificado, a pessoa avaliada deve certificar-se de que este script é executado a cada minuto. Você pode iniciar o que quiser para garantir que o script seja executado corretamente com valores dinâmicos. Finalmente, a pessoa avaliada deve garantir que o script não seja mais executado no lançamento do servidor, sem modificar o próprio script. Para verificar este ponto, o servidor precisará ser reiniciado uma última vez. Na inicialização, deve-se verificar que o script ainda existe no mesmo lugar, que suas permissões permaneceram inalteradas e que não foi modificado. Se algum dos pontos acima não estiver correto, a avaliação termina aqui.
