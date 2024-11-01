@@ -1,11 +1,13 @@
 ---
 sidebar_position: 5
 ---
-# Instalação e configuração do SSH 📶
+# 📶 Instalação e configuração do SSH
 
-## 🧠 O que é SSH❓ 
+Um pouco sobre ssh e como configurar no projeto
 
+:::tip[🧠 O que é SSH❓]
 É o nome de um protocolo e do programa que o implementa, cuja função principal é o acesso remoto a um servidor através de um canal seguro no qual toda a informação é encriptada.
+:::
 
 1. A primeira coisa que faremos é `sudo apt update` para atualizar os repositórios por nós definidos no ficheiro /etc/apt/sources.list
 
@@ -21,10 +23,12 @@ sidebar_position: 5
 5. O # no início de uma linha significa que é comentado, as linhas que vamos modificar devem remover o comentário. Uma vez editado o ficheiro, devemos modificar as seguintes linhas:
 - Port 22 -> Port 4242
 - PermitRootLogin prohibit-password -> PermitRootLogin no
+
 ![vm](./img/port4242.png)
 
 6. Agora no ficheiro ficheiro `/etc/ssh/ssh_config`. 
 - Port 22 -> Port 4242
+
 ![vm](./img/ssh-conf2.png)
 
 7. Finalmente, temos de reiniciar o serviço ssh para actualizar as modificações que acabámos de fazer. Para o fazer, devemos digitar o comando `sudo service ssh restart` e, uma vez reiniciado, vamos olhar para o estado actual com sudo service ssh status e para confirmar que as alterações foram feitas no ouvinte do servidor, a porta 4242 deve aparecer.
