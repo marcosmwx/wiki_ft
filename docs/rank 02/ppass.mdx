@@ -1,0 +1,89 @@
+---
+sidebar : 2
+---
+
+# Primeiros passos FdF
+
+Como fazer os primeiros codigos de FdF
+
+## Preparando o ambiente
+
+Baixe os arquivos que contem na intra : 
+- `FdF`
+- `fdf_linux`
+- `maps.zip`
+- `minilibx-linux.tgz`
+- `sources.tgz`
+
+Como o nome já diz são alguns mapas arquivos de compatibilidade e a propria biblioteca minilibx.
+
+1. Descompacte a biblioteca minilibx na pasta de desenvolvimento
+2. faça o comando 'make' dentro da pasta da minilibx para fazer o arquivo de biblioteca
+3. Inicie seu arquivo '.c'
+
+Ele deve se parecer com isso primeiramente :
+
+```C
+int     main(void)
+{
+        void    *mlx_ptr; //Ponteiro para conexão com servidor
+
+        mlx_ptr = mlx_init(); // Inicialização do servidor
+        if (NULL == mlx_ptr) // Verificação se o servidor foi inicializado corretamente.
+               return (1);
+        mlx_destroy_display(mlx_ptr); //Destroi o display (fecha)
+        free(mlx_ptr); // Libera a memoria alocada apontada pela variável.
+        return (0);
+}
+```
+
+:::tip[Dica]
+Para compilar seu arquivo vamos usar exatamente assim :
+`gcc seu_arquivo.c -Lminilibx-linux -lmlx_Linux -lX11 -lXext`
+:::
+
+## O que é cada "predicado"?
+
+- `gcc`: É o compilador GNU para C e C++.
+- `seu_arquivo.c`: É o arquivo fonte em C que você está compilando.
+- `-Lminilibx-linux`: Informa ao compilador para procurar bibliotecas no diretório minilibx-linux para a fase de linkagem.
+- `-lmlx_Linux`: Informa ao compilador para ligar a biblioteca libmlx_Linux.a ou libmlx_Linux.so, que é a implementação da MiniLibX para Linux.
+- `-lX11`: Linka a biblioteca libX11, que é a interface do X Window System para programas gráficos. Ela permite que o código se comunique com o servidor X para criar janelas e outros elementos gráficos.
+- `-lXext`: Linka a biblioteca libXext, que fornece extensões adicionais para o X11, permitindo funcionalidades mais avançadas de gráficos.
+
+```c
+#include "minilibx-linux/mlx.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+
+#define MALLOC_ERROR	1
+#define WIDTH		400
+#define HEIGHT		400
+
+int main(void)
+{
+    void *mlx_connection;
+    void *mlx_window;
+
+    mlx_connection = mlx_init();
+    if (NULL == mlx_connection)
+        return (MALLOC_ERROR);
+
+    mlx_window = mlx_new_window(mlx_connection, WIDTH, HEIGHT, "My window");
+    //mlx_new_window é uma funcao da biblioteca minilibx que faz a aparição
+    if (NULL == mlx_window)
+    {
+        mlx_destroy_display(mlx_connection);
+        free(mlx_connection);
+        return (MALLOC_ERROR);
+    }
+
+    mlx_loop(mlx_connection);
+    mlx_destroy_window(mlx_connection, mlx_window);
+    mlx_destroy_display(mlx_connection);
+    free(mlx_connection);
+    return (0);
+}
+
+```
