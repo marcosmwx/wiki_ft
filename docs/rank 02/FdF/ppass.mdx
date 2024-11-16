@@ -51,6 +51,18 @@ Para compilar seu arquivo vamos usar exatamente assim :
 - `-lX11`: Linka a biblioteca libX11, que é a interface do X Window System para programas gráficos. Ela permite que o código se comunique com o servidor X para criar janelas e outros elementos gráficos.
 - `-lXext`: Linka a biblioteca libXext, que fornece extensões adicionais para o X11, permitindo funcionalidades mais avançadas de gráficos.
 
+## Codigo para fazer uma janela
+
+#### Abaixo vemos um codigo simples que simula uma tela 400x400. ( Altura x Largura )
+
+Note que passamos a conexao e os tamanhos para fazer a mlx_window. Colocamos a conexao em um loop para a tela ficar aparecendo o tempo todo.
+
+O que podemos notar é que a persistencia da conexão faz essa janela ficar aberta.
+
+:::tip[Dica - CTRL + C]
+Para encerrar essa janela de um Ctrl+C no terminal que a executou.
+:::
+
 ```c
 #include "minilibx-linux/mlx.h"
 #include <stdlib.h>
@@ -71,7 +83,6 @@ int main(void)
         return (MALLOC_ERROR);
 
     mlx_window = mlx_new_window(mlx_connection, WIDTH, HEIGHT, "My window");
-    //mlx_new_window é uma funcao da biblioteca minilibx que faz a aparição
     if (NULL == mlx_window)
     {
         mlx_destroy_display(mlx_connection);
