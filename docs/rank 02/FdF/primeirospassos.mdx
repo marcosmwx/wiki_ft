@@ -1,0 +1,54 @@
+---
+sidebar_position: 3
+---
+
+# Primeiros passos FdF
+
+Vamos começar lendo um mapa
+
+### Mapa?
+mapa:
+```mdxjs
+0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+0  0 10 10  0  0 10 10  0  0  0 10 10 10 10 10  0  0  0
+0  0 10 10  0  0 10 10  0  0  0  0  0  0  0 10 10  0  0
+0  0 10 10  0  0 10 10  0  0  0  0  0  0  0 10 10  0  0
+0  0 10 10 10 10 10 10  0  0  0  0 10 10 10 10  0  0  0
+0  0  0 10 10 10 10 10  0  0  0 10 10  0  0  0  0  0  0
+0  0  0  0  0  0 10 10  0  0  0 10 10  0  0  0  0  0  0
+0  0  0  0  0  0 10 10  0  0  0 10 10 10 10 10 10  0  0
+0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+
+```
+
+### Prepare o "Ambiente"
+Primeira coisa a fazer é preparar sua libft contendo as funções GNL e FT_PRINTF e as demais padrões...
+
+Organize e Teste seu libft.h e makefile.
+
+Exemplo:
+```C libft.h
+#ifndef LIBFT_H
+
+# define LIBFT_H
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 42
+# endif
+
+# include <stdlib.h>
+# include <unistd.h>
+
+int		ft_atoi(const char *nptr);
+char	**ft_split(char const *s, char c);
+char	*ft_strjoin(char const *s1, char const *s2);
+size_t	ft_strlen(const char *s);
+char	*get_next_line(int fd);
+char	*ft_copy_from(char *src, int n);
+char	*ft_copy_until(char *src, int n);
+char	*ft_strdup(const char *src);
+
+#endif
+```
