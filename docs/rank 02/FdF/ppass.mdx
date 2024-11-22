@@ -1,8 +1,8 @@
 ---
-sidebar : 2
+sidebar_position: 2
 ---
 
-# Primeiros passos FdF
+# Primeiros passos MinilibX
 
 Como fazer os primeiros codigos de FdF
 
@@ -55,7 +55,7 @@ Para compilar seu arquivo vamos usar exatamente assim :
 
 #### Abaixo vemos um codigo simples que simula uma tela 400x400. ( Altura x Largura )
 
-Note que passamos a conexao e os tamanhos para fazer a mlx_window. Colocamos a conexao em um loop para a tela ficar aparecendo o tempo todo.
+Note que passamos a conexao e os tamanhos para fazer a mlx_window. Colocamos a conexao em um loop para a tela "ficar aparecendo" o tempo todo.
 
 O que podemos notar é que a persistencia da conexão faz essa janela ficar aberta.
 
@@ -96,5 +96,82 @@ int main(void)
     free(mlx_connection);
     return (0);
 }
+```
 
+## Struct e Aplicação
+
+1. Agora vamos alterar um pouco o código para que ele consiga executar alguns comando através dos hooks e note que vamo utilizar `struct`.
+- Mas porque usar struct agora e assim?
+    - Note que quando utilizamos `mlx_key_hook` passamos só 3 parametros e isso seria um problema se tivessemos de passar mais coisas,
+dessa forma utilizamos um struct para passar uma quantidade igual de parametros. ( Assim posso enviar maos dados com menos parametros)
+    - Na funcao key_hook passamos o valor da tecla e uma lista que contem a conexao (mlx_ptr) e a janela (win_ptr) dessa forma podemos tratar erros dentro da função e realizar todos os cuidados com alocação dinamica.
+- Não é possivel sem?
+    - Sim, é possível porem vamos ter que digitar mais para tratar erros ou dar voltas para fazer a mesma coisa..
+
+:::warning[DICA]
+    Não tente fugir do struct / linked-list, faça-os ficarem triviais, no inicio pode ser doloroso mas pode ser recompensador no futuro.
+    Estarei fazendo isso neste projeto e pretendo continuar nos próximos.
+:::
+
+```C
+#define MALLOC_ERROR    1
+#define WIDTH           400
+#define HEIGHT          400
+
+typedef struct s_mlx_data //Inicialização da Struct
+{
+        void    *mlx_ptr; //Ponteiro para conexão
+        void    *win_ptr; //Ponteiro para janela
+}               t_mlx_data;
+
+int     key_hook(int keycode, t_mlx_data *data) //Função que trataremos as teclas
+/*
+Note que foi passado a struct assim abaixo podemos acessar esses dados e passa-los como parametros
+mais facilmente
+*/
+{
+        if (keycode == 53 || keycode == 65307) //Coloquei 53 e 65307 porque depende do teclado e qual
+lingugaem utiliza eu acho..
+        {
+                printf("Esc pressionado! Fechando...\n");
+                mlx_destroy_window(data->mlx_ptr, data->win_ptr);
+                mlx_destroy_display(data->mlx_ptr);
+                free(data->mlx_ptr);
+                exit(0);
+        }
+        else
+        {
+                printf("Tecla pressionada: %d\n", keycode);
+        }
+        return (0);
+}
+
+int     main(void)
+{
+        t_mlx_data      data;
+
+        data.mlx_ptr = mlx_init();
+        if (data.mlx_ptr == NULL)
+        return (MALLOC_ERROR);
+
+        data.win_ptr = mlx_new_window(data.mlx_ptr, WIDTH, HEIGHT, "FdF - MwX-");
+        if (data.win_ptr == NULL)
+        {
+                mlx_destroy_display(data.mlx_ptr);
+                free(data.mlx_ptr);
+                return (MALLOC_ERROR);
+        }
+/*
+O mlx_key_hook permite capturar eventos de teclado, ou seja, quando o usuário pressiona uma tecla
+enquanto a janela criada pela MiniLibX está ativa.
+*/
+        mlx_key_hook(data.win_ptr, key_hook, &data);
+
+        mlx_loop(data.mlx_ptr);
+
+        mlx_destroy_window(data.mlx_ptr, data.win_ptr);
+        mlx_destroy_display(data.mlx_ptr);
+        free(data.mlx_ptr);
+        return (0);
+}
 ```
