@@ -1,0 +1,82 @@
+
+# Pack Hooks
+Função para chamar os hooks na fdf.c
+
+```c Pack_hooks.c
+void	pack_hooks(t_fdf_gen *gen_data)
+{
+	mlx_hook(gen_data->data->win_ptr, 17, 0,
+		mlx_loop_end, gen_data->data->mlx_ptr);
+	mlx_key_hook(gen_data->data->win_ptr, key_hook, gen_data);
+}
+```
+### Key hook
+Função que chama alguma funcionalidade ao precionar alguma tecla
+
+```c Key_hook
+int	key_hook(int keycode, t_fdf_gen *gen_data)
+{
+	if (keycode == 65307 || keycode == 53) // Tecla ESC para sair
+		return (mlx_loop_end(gen_data->data->mlx_ptr));
+	handle_depth(keycode, gen_data);
+	handle_rotation(keycode, gen_data);
+	handle_movement(keycode, gen_data);
+	handle_zoom(keycode, gen_data);
+	draw(gen_data);
+	return (0);
+}
+```
+### Alguns hooks
+```c
+static void	handle_depth(int keycode, t_fdf_gen *gen_data)
+{
+	if (keycode == KEY_I) // Tecla 'i' para aumentar a profundidade
+		gen_data->graph->depth_factor += 0.4;
+	else if (keycode == KEY_O) // Tecla 'o' para diminuir a profundidade
+		gen_data->graph->depth_factor -= 0.4;
+}
+
+static void	handle_rotation(int keycode, t_fdf_gen *gen_data)
+{
+	if (keycode == KEY_UP)    // Seta para cima rotaciona para cima
+		gen_data->graph->angle_x += 0.1;
+	else if (keycode == KEY_DOWN)  // Seta para baixo rotaciona para baixo
+		gen_data->graph->angle_x -= 0.1;
+	else if (keycode == KEY_LEFT)  // Seta para esquerda rotaciona girando para esquerda
+		gen_data->graph->angle_y -= 0.1;
+	else if (keycode == KEY_RIGHT) // Seta para direita rotaciona girando para direita
+		gen_data->graph->angle_y += 0.1;
+}
+
+static void	handle_movement(int keycode, t_fdf_gen *gen_data)
+{
+	if (keycode == KEY_W) // tecla w movimenta para cima
+		gen_data->graph->shift_y -= 10;
+	else if (keycode == KEY_S) // tecla s movimenta para baixo
+		gen_data->graph->shift_y += 10;
+	else if (keycode == KEY_A) // tecla a movimenta para esquerda
+		gen_data->graph->shift_x -= 10;
+	else if (keycode == KEY_D) // tecla d movimenta para direita
+		gen_data->graph->shift_x += 10;
+}
+
+static void	handle_zoom(int keycode, t_fdf_gen *gen_data)
+{
+	if (keycode == KEY_Z) // tecla z aumenta zoom
+		gen_data->graph->zoom += 5;
+	else if (keycode == KEY_X) // tecla x diminui zoom
+		gen_data->graph->zoom -= 5;
+}
+
+int	key_hook(int keycode, t_fdf_gen *gen_data)
+{
+	if (keycode == KEY_ESC || keycode == KEY_ESC_ALT) // Tecla ESC para sair
+		return (mlx_loop_end(gen_data->data->mlx_ptr));
+	handle_depth(keycode, gen_data);
+	handle_rotation(keycode, gen_data);
+	handle_movement(keycode, gen_data);
+	handle_zoom(keycode, gen_data);
+	draw(gen_data);
+	return (0);
+}
+```

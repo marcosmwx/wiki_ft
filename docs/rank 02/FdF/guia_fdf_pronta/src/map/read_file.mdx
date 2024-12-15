@@ -1,0 +1,107 @@
+
+# Read File
+Arquivo especifico para leitura e parse do mapa
+
+
+### Read_file
+Funcao que pega as informacoes do mapa e popula a matrix por alocação contigua
+
+```c read_file.c
+int	read_file(char *file_name, t_fdf *data)
+{
+	int fd;
+	char *line;
+	int i;
+
+	i = -1;
+	if (!init_get_resources_from_file(data, file_name))
+		return (0);
+	data->z_matrix = (t_point *)malloc(sizeof(t_point) * data->height * data->width); 	// Alocação contígua
+	if (!data->z_matrix)
+		return (0);
+	fd = open(file_name, O_RDONLY);
+	if (fd < 0)
+	{
+		free(data->z_matrix);
+		return (0);
+	}
+	while (++i < data->height)
+	{
+		line = get_next_line(fd);
+		if (line == NULL)
+			break;
+		fill_matrix(&data->z_matrix[i * data->width], line, data->width);
+	}
+	close(fd);
+	return (1);
+}
+```
+
+
+### Init get resources from file
+Funcao que atribui a altura e largura e verifica se deu certo a atribuicao (funcao para linhas)
+
+```c init_get_resources_from_file
+static int	init_get_resources_from_file(t_fdf *data, char *file_name)
+{
+	data->height = get_height(file_name);
+	data->width = get_width(file_name);
+	if (data->width <= 0 || data->height <= 0)
+		return (0);
+	return (1);
+}
+```
+
+### Fill matrix
+Separa as coisas e depois da o fill abaixo
+```c
+static void	fill_matrix(t_point *z_line, char *line, int width)
+{
+	char		**nums;
+	int	i;
+
+	i = 0;
+	nums = ft_split(line, ' ');
+	if (!nums)
+	{
+		free(nums);
+		return ;
+	}
+	while (nums[i] && i < width)
+	{
+		if (!fill_value_and_color(nums[i], &z_line[i]))
+		{
+			free(nums[i]);
+			i++;
+			continue ;
+		}
+		free(nums[i]);
+		i++;
+	}
+	free(nums);
+	free(line);
+}
+```
+### Fill value and color
+
+extrai tanto o valor numérico (para a coordenada Z) quanto a cor (para a representação visual de um ponto em um gráfico).
+```c fill_value_and_color
+static int	fill_value_and_color(char *num_str, t_point *z_line)
+{
+	char	**value_and_color;
+
+	value_and_color = ft_split(num_str, ','); // Separa valor e cor
+	if (!value_and_color)
+		return (0);
+	z_line->value = ft_atoi(value_and_color[0]); // Primeiro elemento é o valor Z
+	if (value_and_color[1]) // Verifica se há cor definida
+		z_line->hex = ft_strdup(value_and_color[1]); // Duplica a cor para o hex
+	else
+		z_line->hex = ft_strdup("0xFFFFFF"); // Cor padrão (branco)
+	free(value_and_color[0]);
+	if (value_and_color[1])
+		free(value_and_color[1]);
+	free(value_and_color);
+	return (1);
+}
+```

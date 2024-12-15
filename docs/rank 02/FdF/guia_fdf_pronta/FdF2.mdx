@@ -1,0 +1,171 @@
+---
+sidebar_position: 3
+---
+
+# fdf.c Inicio de Tudo
+
+Este arquivo **"MAIN"** inicia o FDF e organiza a execução do programa, desde a validação de parâmetros até a liberação de recursos. Abaixo está a função principal e suas responsabilidades
+
+
+### fdf
+
+```C fdf.c
+int	main(int argc, char **argv)
+{
+	t_fdf_gen	gen_data; //Inicialização da Struct Mae
+
+    // Verifica se há quantidade necessária de parâmetros
+	if (argc != 2)
+	{
+		ft_putstr(NF_MAP);
+		return (0);
+	}
+	// Verifica se mallocou corretamente
+
+	if (!malloc_structs(&gen_data))
+		return (0);
+    // Verifica se efeturou corretamente a leitura do mapa caso não
+    // Libera os itens acima ja mallocados
+	if (!read_file(argv[1], gen_data.data))
+	{
+		free_resources(&gen_data);
+		return (0);
+	}
+	// verifica se inicializou corretamente o server para iniciar o loop
+	// hooks e imagens
+	if (start_server(&gen_data))
+	{
+		make_img(&gen_data);
+		pack_hooks(&gen_data);
+		mlx_loop(gen_data.data->mlx_ptr);
+	}
+	// libera todos os ponteiros e recursos ao final da aplicação
+	free_pointer_server(&gen_data);
+	free_resources(&gen_data);
+	
+}
+```
+
+### Malloc_structs
+De forma legivel foi implementada essa função statica que inicializa toda as structs e verifica corretamente
+se estão inicializadas.
+
+```c malloc_structs
+static int	malloc_structs(t_fdf_gen *gen_data)
+{
+	gen_data->data = (t_fdf *)malloc(sizeof(t_fdf));
+	if (!gen_data->data)
+	{
+		free_resources(gen_data);
+		return (0);
+	}
+	gen_data->graph = (t_graph *)malloc(sizeof(t_graph));
+	if (!gen_data->graph)
+	{
+		free_resources(gen_data);
+		return (0);
+	}
+	gen_data->img_data = (t_img *)malloc(sizeof(t_img));
+	if (!gen_data->img_data)
+	{
+		free_resources(gen_data);
+		return (0);
+	}
+	return (1);
+}
+```
+### Start_server
+Funcao que vai iniciarlizar a biblioteca e definir alguns ponteiros de contexto grafico
+
+```c start_server
+static int	start_server(t_fdf_gen *gen_data)
+{
+    // Inicializa a biblioteca Minilibx e armazena o ponteiro para o contexto gráfico.
+	gen_data->data->mlx_ptr = mlx_init();
+	if (!gen_data->data->mlx_ptr)
+		return (0);
+    // Define a largura e altura dinamicamente de acordo com a janela
+	gen_data->data->win_width = 1920;
+	gen_data->data->win_height = 1080;
+	gen_data->data->win_ptr = NULL;
+   // mlx_get_screen_size(gen_data->data->mlx_ptr, &gen_data->data->win_width, &gen_data->data->win_height);
+	// Verifica se a largura ou altura da janela calculada são inválidas (valores negativos).
+    if (gen_data->data->win_width < 0 || gen_data->data->win_height < 0)
+		return (0);
+    // Cria uma nova janela na MiniLibX com as dimensões especificadas e o título "FdF".
+	gen_data->data->win_ptr = mlx_new_window(
+			gen_data->data->mlx_ptr,
+			gen_data->data->win_width,
+			gen_data->data->win_height,
+			"FdF"
+			);
+	if (!gen_data->data->win_ptr)
+		return (0);
+    // Inicializa variáveis adicionais necessárias para o programa.
+	set_variables(gen_data);
+	return (1);
+}
+```
+### Set_variables
+Funcao que vai inializar algumas variaveis para definir algumas regras para mostrar a imagem
+
+```c Set_variables
+static void	set_variables(t_fdf_gen *gen_data)
+{
+    // Variáveis locais para armazenar as coordenadas do centro do mapa.
+	float	map_center_x;
+	float	map_center_y;
+
+	map_center_x = 0;
+	map_center_y = 0;
+    // Define o zoom padrão.
+	gen_data->graph->zoom = 3;
+    // Define os ângulos de rotação para o gráfico.
+	gen_data->graph->angle_x = 0.2;
+	gen_data->graph->angle_y = 0.2;
+    // Define o fator de profundidade
+	gen_data->graph->depth_factor = 0.4;
+    // Calcula o centro do mapa em relação ao zoom aplicado e ao número de pontos no eixo X.
+	map_center_x = (gen_data->data->width - 1) * gen_data->graph->zoom / 50.0;
+	map_center_y = (gen_data->data->height - 1) * gen_data->graph->zoom / 50.0;
+    // Define o deslocamento do gráfico no eixo X e Y, de modo que o centro do mapa
+	// seja posicionado no meio da janela de exibição.
+	gen_data->graph->shift_x = (gen_data->data->win_width / 2) - map_center_x;
+	gen_data->graph->shift_y = (gen_data->data->win_height / 2) - map_center_y;
+}
+```
+
+:::warning[calculo do centro do mapa]
+Se não calcular o centro corretamente após aplicar o zoom, o mapa ficaria levemente não centralizado, porque o centro "real" do mapa (após o zoom) mudaria, mas o cálculo de centralização não seria atualizado. Isso pode causar o mapa a parecer deslocado na tela.
+:::
+
+:::warning[calculo do centro da tela]
+Agora que temos o centro do mapa precisamos calcular onde posicionar esse centro em relacao a janela
+:::
+
+### Make_img
+
+Funcao que vai criar uma nova imagem, Recupera o endereço dos dados da imagem e Desenhar a imagem no contexto gráfico
+
+```c Make_img
+static void	make_img(t_fdf_gen *gen_data)
+{
+	gen_data->img_data->img_ptr = mlx_new_image(
+			gen_data->data->mlx_ptr,
+			gen_data->data->win_width,
+			gen_data->data->win_height
+			);
+	gen_data->img_data->img_data = mlx_get_data_addr(
+// Ponteiro da imagem
+			gen_data->img_data->img_ptr,
+// Armazenará o número de bits usados para representar cada pixel na imagem. 8x4 = 32
+			&gen_data->img_data->bpp,
+// Tamanho de cada linha da imagem, em bytes
+			&gen_data->img_data->size_line,
+// Ordem dos bytes na memória
+			&gen_data->img_data->endian
+			);
+// Funcao que desenha na tela
+	draw(gen_data);
+}
+```

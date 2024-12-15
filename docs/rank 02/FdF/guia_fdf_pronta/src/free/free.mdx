@@ -1,0 +1,99 @@
+---
+sidebar_position: 1
+---
+
+# Free Files
+
+O que cada arquivo da src/free faz?
+
+## Clear_image.c
+
+O objetivo dessa funcao é:
+- limpar e preparar para a proxima imagem.
+- Essa função destroy a imagem.
+- Adiciona novos dados no img_data.
+
+```C
+void	clear_image(t_fdf *data, t_img *img_data)
+{
+	mlx_destroy_image(data->mlx_ptr, img_data->img_ptr);
+	img_data->img_ptr = mlx_new_image(
+			data->mlx_ptr,
+			data->win_width,
+			data->win_height
+			);
+	img_data->img_data = mlx_get_data_addr(
+			img_data->img_ptr,
+			&img_data->bpp,
+			&img_data->size_line,
+			&img_data->endian
+			);
+}
+```
+## Free_data.c
+
+O objetivo dessa função é libera todos os itens da z_matrix
+
+```C
+void	free_data(t_fdf *data)
+{
+	int	i;
+
+	i = 0;
+	if (!data)
+		return ;
+	if (data->z_matrix)
+	{
+		while (i < data->height * data->width)
+		{
+			if (data->z_matrix[i].hex)
+				free(data->z_matrix[i].hex);
+			i++;
+		}
+		free(data->z_matrix);
+	}
+	free(data);
+	data = NULL;
+}
+```
+## Free_pointer_server.c
+O objetivo dessa funcao é liberar todos os ponteiros utilizados pela mlx
+
+```C
+int	free_pointer_server(t_fdf_gen *gen_data)
+{
+	if (!gen_data->data)
+		return (0);
+	if (gen_data->data->mlx_ptr && gen_data->data->win_ptr)
+	{
+		mlx_destroy_image(gen_data->data->mlx_ptr, gen_data->img_data->img_ptr);
+		mlx_destroy_window(gen_data->data->mlx_ptr, gen_data->data->win_ptr);
+		gen_data->data->win_ptr = NULL;
+	}
+	if (gen_data->data->mlx_ptr)
+	{
+		mlx_destroy_display(gen_data->data->mlx_ptr);
+		free(gen_data->data->mlx_ptr);
+		gen_data->data->mlx_ptr = NULL;
+	}
+	if (gen_data->data)
+		free_data(gen_data->data);
+	gen_data->data = NULL;
+	return (0);
+}
+```
+
+## Free_resources.c
+
+O objetivo dessa função é liberar todas as Structs que foram mallocadas
+```C
+void	free_resources(t_fdf_gen *gen_data)
+{
+	if (gen_data->img_data)
+		free(gen_data->img_data);
+	if (gen_data->graph)
+		free(gen_data->graph);
+	if (gen_data->data)
+		free(gen_data->data);
+}
+```

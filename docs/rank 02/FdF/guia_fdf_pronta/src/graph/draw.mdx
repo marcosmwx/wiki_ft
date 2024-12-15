@@ -1,0 +1,137 @@
+---
+sidebar_position: 1
+---
+
+# Draw
+
+Pixel por pixel, esse arquivo é um dos mais importantes, contendo toda a estrutura para fazer o desenho na tela.
+
+### Draw
+Essa função é responsavel por gerenciar os desenhos na tela
+
+```C draw
+void	draw(t_fdf_gen *gen_data)
+{
+    // Inicializa a struct de coordenadas, ela morre aqui.
+	t_coords	coords;
+
+    // Se possível limpa a imagem na tela
+	clear_image(gen_data->data, gen_data->img_data);
+	coords.y = 0;
+    // Para cada linha processamos cada coluna
+	while (coords.y < gen_data->data->height)
+	{
+		coords.x = 0;
+		while (coords.x < gen_data->data->width)
+		{
+			process_coords(&coords, gen_data);
+			coords.x++;
+		}
+		coords.y++;
+	}
+    // Finalmente utilizamos a função para exibir a imagem na tela de uma única vez
+	mlx_put_image_to_window(gen_data->data->mlx_ptr, gen_data->data->win_ptr,
+		gen_data->img_data->img_ptr, 0, 0);
+}
+```
+
+### Process_coords
+Função statica responsavel por processar as coordenadas e efetuar o algoritmo de Bresehnam
+
+```C process_coords
+static void	process_coords(t_coords *coords, t_fdf_gen *gen_data)
+{
+	if (coords->x < gen_data->data->width - 1)
+	{
+		coords->x1 = coords->x + 1;
+		coords->y1 = coords->y;
+		bresehnam(*coords, gen_data);
+	}
+	if (coords->y < gen_data->data->height - 1)
+	{
+		coords->x1 = coords->x;
+		coords->y1 = coords->y + 1;
+		bresehnam(*coords, gen_data);
+	}
+}
+```
+### Bresenham
+Funcao que executa as funcoes auxiliares utilizando o algoritimo de Bresenham
+
+```c Bresehnam
+static void	bresenham(t_coords coords, t_fdf_gen *gen_data)
+{
+	float	x_step;
+	float	y_step;
+
+	x_step = 0;
+	y_step = 0;
+	coords.z = 0;
+	coords.z1 = 0;
+	coords.start_color = 0;
+	get_initial_values(&coords, gen_data->data);
+	apply_scale_zoom(&coords, gen_data->graph);
+	apply_center_of_map(&coords, gen_data);
+	isometric(&coords.x, &coords.y, coords.z, gen_data->graph);
+	isometric(&coords.x1, &coords.y1, coords.z1, gen_data->graph);
+	apply_shift(&coords, gen_data->graph);
+	trace_lines(&x_step, &y_step, &coords, gen_data);
+}
+```
+
+### Get_initial_values
+Funcao acessa e atribui valores iniciais de coordenadas e cores.
+
+```c get_initial_values
+void get_initial_values(t_coords *coords, t_fdf *data)
+{
+	// Acessa os valores z dentro dos blocos da matriz - valores iniciais
+	coords->z = data->z_matrix[
+		(int)(coords->y * data->width + coords->x)].value;
+	// Acesso ao valor Z (valor atual altura)
+	coords->z1 = data->z_matrix[
+		(int)(coords->y1 * data->width + coords->x1)].value;
+	// Acesso ao valor Z1 ( proximo valor altura)
+	coords->start_color = ft_atoi_hexa(data->z_matrix[
+			(int)(coords->y * data->width + coords->x)].hex);
+	// Acesso à cor inicial
+}
+```
+### Apply_scale_zoom
+
+Os pontos iniciais e finais foram ampliados para o dobro de sua distância original, resultando em uma linha maior.
+```C apply_scale_zoom
+void	apply_scale_zoom(t_coords *coords, t_graph *graph)
+{
+	coords->x *= graph->zoom;
+	coords->y *= graph->zoom;
+	coords->x1 *= graph->zoom;
+	coords->y1 *= graph->zoom;
+}
+```
+
+### Apply_center_of_map
+Ajusta as coordenadas dos pontos, aplicando o zoom de forma multiplicativa
+```C
+void	apply_center_of_map(t_coords *coords, t_fdf_gen *gen_data)
+{
+	coords->x -= (gen_data->data->width - 1) * gen_data->graph->zoom / 2.0;
+	coords->y -= (gen_data->data->height - 1) * gen_data->graph->zoom / 2.0;
+	coords->x1 -= (gen_data->data->width - 1) * gen_data->graph->zoom / 2.0;
+	coords->y1 -= (gen_data->data->height - 1) * gen_data->graph->zoom / 2.0;
+}
+```
+
+### Apply_shift
+Aplica um deslocamento (ou shift) nas coordenadas dos pontos representados pela struct coords.
+
+```c apply_shift
+void	apply_shift(t_coords *coords, t_graph *graph)
+{
+	coords->x += graph->shift_x;
+	coords->y += graph->shift_y;
+	coords->x1 += graph->shift_x;
+	coords->y1 += graph->shift_y;
+}
+```
+

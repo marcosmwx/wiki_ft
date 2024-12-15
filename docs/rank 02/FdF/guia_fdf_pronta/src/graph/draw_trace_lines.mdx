@@ -1,0 +1,53 @@
+---
+sidebar_position: 2
+---
+
+# Trace_Lines
+
+Arquivos utilitarios da brasenham
+
+### Trace_lines
+Desenha uma linha entre dois pontos no espaço 2D, calcula passos necessarios para "trilhar" a linha
+```c
+void	trace_lines(float *x_step, float *y_step,
+		t_coords *coords, t_fdf_gen *gen_data)
+{
+	int		max;
+
+	max = 0;
+// calcula passos em x e y
+	*x_step = coords->x1 - coords->x;
+	*y_step = coords->y1 - coords->y;
+// Calcula o maior valor entre os passos em X e Y
+	max = max_func(mod(*x_step), mod(*y_step));
+// Normaliza o passo em X e Y para que haja algum tipo de constancia na magnetude
+	*x_step /= max;
+	*y_step /= max;
+	while ((int)(coords->x - coords->x1) || (int)(coords->y - coords->y1))
+	{
+		set_pixel(coords, gen_data); // Define o pixel atual
+		coords->x += *x_step; // Atualiza a coordenada X
+		coords->y += *y_step; // Atualiza a coordenada Y
+	}
+}
+```
+### Set_pixel
+Define a cor de um pixel especifico na imagem que esta sendo gerada
+```c set_pixel
+static void	set_pixel(t_coords *coords, t_fdf_gen *gen_data)
+{
+	int	index;
+
+	index = 0;
+// Verifica se as coordenadas (coords->x, coords->y) estão dentro dos limites da janela
+	if (coords->x >= 0 && coords->x < gen_data->data->win_width
+		&& coords->y >= 0 && coords->y < gen_data->data->win_height)
+	{
+// Calcula o índice do pixel na memória da imagem (nao da para simplesmente pintar ali.. tem que achar na memoria da imagem)
+		index = ((int)coords->y * gen_data->img_data->size_line
+				+ (int)coords->x * (gen_data->img_data->bpp / 8));
+// Define a cor do pixel no índice calculado
+		*(int *)(gen_data->img_data->img_data + index) = coords->start_color;
+	}
+}
+```

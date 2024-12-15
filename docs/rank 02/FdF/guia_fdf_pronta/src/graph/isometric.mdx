@@ -1,0 +1,42 @@
+---
+sidebar_position: 3
+---
+
+# Isometric
+
+Faz a transformação em 3D, nao tao simples assim.
+- Recebe as cordenadas de linha e coluna e altura (profundidade)
+- Aplica o valor de profundidade ao z
+- Realiza a rotação do ponto em torno do eixo X, que afeta as coordenadas y e z (no espaço 3D).
+```c
+static void	isometric(float *x, float *y, int z, t_graph *graph)
+{
+	float	previous_x;
+	float	previous_y;
+	float	rotated_y;
+	float	rotated_z;
+	float	rotated_x;
+
+	previous_x = *x;
+	previous_y = *y;
+	// Aplicando o fator de profundidade
+	z *= graph->depth_factor;
+	// Rotação em torno do eixo X
+	rotated_y = previous_y * cos(graph->angle_x) - z * sin(graph->angle_x);
+	rotated_z = previous_y * sin(graph->angle_x) + z * cos(graph->angle_x);
+	// Rotação em torno do eixo Y (se necessário)
+	rotated_x = previous_x * cos(graph->angle_y) + rotated_z
+		* sin(graph->angle_y);
+	rotated_z = -previous_x * sin(graph->angle_y) + rotated_z
+		* cos(graph->angle_y);
+	// Atualizando as coordenadas
+	*x = rotated_x; // X rotacionado em torno de Y
+	*y = rotated_y; // Y rotacionado em torno de X
+}
+```
+
+A função isometric pega um ponto e faz com que ele pareça estar em 3D ao aplicar giro e profundidade. Ela gira as coordenadas para dar a sensação de que o ponto está fora de uma folha plana, fazendo com que ele pareça inclinado e com profundidade, tudo isso sem realmente mudar a forma do objeto, mas apenas a maneira como ele é projetado no papel (ou na tela).
+
+O seno (sen) e o cosseno (cos) são usados para calcular a nova posição de um ponto após uma rotação. O coseno nos ajuda a calcular quanto de uma coordenada original deve ser mantido, enquanto o seno nos ajuda a mover a coordenada para o novo lugar.
+
+Essas funções são essenciais porque, em 3D, as rotações não são feitas de forma simples como em 2D. Precisamos calcular precisamente como o ponto vai se mover nos três eixos (X, Y e Z) quando ele gira ao redor de um dos eixos. O sen e o cos nos ajudam a fazer isso de maneira exata.
