@@ -1,0 +1,115 @@
+---
+sidebar_position: 4
+---
+## Explicação Detalhada: `client.c` 💻
+
+O `client.c` é o responsável por enviar uma **mensagem como sinal binário** para o processo servidor (`server.c`) utilizando sinais Unix (`SIGUSR1` e `SIGUSR2`). Ele converte cada caractere da mensagem em bits e envia, bit a bit, para o servidor que está escutando.
+
+### Objetivo Geral 📌
+
+Transformar uma mensagem de texto em uma série de sinais (`SIGUSR1` e `SIGUSR2`) para que o servidor possa reconstruir a mensagem original.
+
+---
+
+### Código Explicado 🧠
+
+```c
+void send_char(int pid, unsigned char c)
+```
+Parâmetros
+- `pid:` número do processo do servidor (obtido pelo terminal)
+- `c:` caractere a ser enviado
+>⚠️ ***É `unsigned char` porque estamos lidando com valores ASCII de 0 a 255, sem precisar de números negativos.***
+
+Loop de bits: envio bit a bit 🔁
+```C
+int bit = 7;
+while (bit >= 0)
+```
+Cada caractere tem 8 bits. Este loop vai iterar de 7 a 0.
+
+### 🔄 Envio dos sinais
+```C
+if ((c >> bit) & 1)
+    kill(pid, SIGUSR2); // se bit for 1
+else
+    kill(pid, SIGUSR1); // se bit for 0
+
+```
+
+Explicação: 🧮
+
+`(c >> bit)`: desloca o bit atual para a posição mais à direita
+
+`& 1`: isola apenas aquele bit
+
+`kill(pid, SIGUSR2)`: envia sinal SIGUSR2 se o bit for 1
+
+`kill(pid, SIGUSR1)`: envia sinal SIGUSR1 se o bit for 0
+
+`usleep(600)`: Aguarda 600 microssegundos para garantir que o servidor consiga processar o sinal. 💤
+
+Função main 🧵
+
+Pode notar que u coloquei uma verificacao de `argc != 3` e totalmente opcional voce pode querer fazer a verificacao de outra maneira e ta tudo bem..
+No meu caso:
+
+- Verifica se o número de argumentos está correto.
+- Esperamos: ```./client <PID> <MENSAGEM>```
+- Se diferente, mostramos instrução de uso e interrompemos o programa.
+
+### ft_atoi(argv[1])
+```C
+pid = ft_atoi(argv[1]);
+```
+- Converte a string do PID em int
+- Assim nos deixa verificar se o `PID` vai ser menor ou igual a zero
+```C
+if (pid <= 0)
+```
+
+### Envio da mensagem 📤
+```C
+while (*msg)
+    send_char(pid, *msg++);
+```
+- Percorre a string e envia caractere por caractere.
+- Envia um `\0` no final como terminador para o servidor saber que a mensagem terminou.
+
+### Exemplo Prático 🧪
+```C
+./client 4242 "oi"
+```
+
+#### Fluxo: (O)
+1. "4242" é convertido com `ft_atoi`
+2. "o" → 01101111 → sinal por sinal igual na tabela
+3. "i" → 01101001 → sinal por sinal igual na tabela
+4. "\0" → 00000000 → sinal por sinal igual na tabela
+
+🧾 **Tabela de Conversão: Letra `'o'` (ASCII 111 / Binário 01101111)**
+
+| Bit Atual | `(c >> bit)` | Binário após shift | `(c >> bit) & 1` | Valor do Bit |
+|-----------|--------------|---------------------|------------------|---------------|
+| 7         | `01101111 >> 7` | `00000000`        | `0`              | 0             |
+| 6         | `01101111 >> 6` | `00000001`        | `1`              | 1             |
+| 5         | `01101111 >> 5` | `00000011`        | `1`              | 1             |
+| 4         | `01101111 >> 4` | `00000110`        | `0`              | 0             |
+| 3         | `01101111 >> 3` | `00001101`        | `1`              | 1             |
+| 2         | `01101111 >> 2` | `00011011`        | `1`              | 1             |
+| 1         | `01101111 >> 1` | `00110111`        | `1`              | 1             |
+| 0         | `01101111 >> 0` | `01101111`        | `1`              | 1             |
+
+
+### Resumo ✅
+| Elemento       | Função                                                              |
+|----------------|---------------------------------------------------------------------|
+| `argc != 3`    | Garante que o usuário passe os 2 argumentos necessários             |
+| `ft_atoi`      | Converte PID (string) em número inteiro                             |
+| `unsigned char`| Trabalha com valores de 0 a 255 (ASCII)                             |
+| `kill`         | Envia sinais para outro processo                                    |
+| `SIGUSR1`      | Representa bit 0                                                    |
+| `SIGUSR2`      | Representa bit 1                                                    |
+| `usleep(600)`  | Dá tempo entre sinais para o servidor não perder                    |
+| `send_char`    | Envia um caractere bit a bit para o servidor                        |
+| `\0`           | Marca o fim da mensagem                                             |

@@ -1,0 +1,177 @@
+---
+sidebar_position: 3
+---
+# Como funciona server.c
+Guia completo e explicadinho do server.c
+
+Primeiro da uma olhada rapida no codigo e tente entender minimamente..
+
+### Codigo 🧾
+```C
+#include "libft/libft.h"
+
+void    handle_signal(int sig)
+{
+        static unsigned char c;
+        static int                      bit = 0;
+
+        if (sig == SIGUSR2)
+                c |= (1 << (7 - bit));
+        bit++;
+        if (bit == 8)
+        {
+                if (c == '\0')
+                        write(1, "\n", 1);
+                else
+                        write(1, &c, 1);
+                c = 0;
+                bit = 0;
+        }
+}
+
+int     main(void)
+{
+        ft_printf("Server PID: %d\n", getpid());
+        signal(SIGUSR1, handle_signal);
+        signal(SIGUSR2, handle_signal);
+
+        while (1)
+                ;
+        return (0);
+}
+```
+
+## Panorama geral 🧠
+O `server.c` é a ***parte que "escuta"*** e recebe os sinais enviados pelo `client.c`. Ele funciona assim:
+
+1. ***Exibe seu PID*** (identificador do processo no sistema).
+
+ - Isso é necessário porque o cliente precisa saber para ***qual processo enviar sinais***.
+ - O PID é obtido com a função `getpid()`.
+
+2. ***Configura dois sinais personalizados***, `SIGUSR1` e `SIGUSR2`, para representar bits binários:
+
+ - `SIGUSR1` representa o bit `0`
+ - `SIGUSR2` representa o bit `1`
+
+3. A cada sinal recebido, ele ***vai montando um caractere bit a bit***.
+
+ - Quando 8 bits são recebidos, ele monta um caractere da tabela ASCII.
+ - Se for o caractere `\0` (null terminator), ele imprime uma nova linha.
+ - Se for outro caractere, ele imprime na tela.
+
+4. Tudo isso é feito com a função `signal()` e um loop infinito SEM `pause()` que mantém o servidor escutando.
+
+## PID – O que é e por que usar? 📌
+- ***PID (Process ID)*** é um número único que identifica um processo rodando no sistema operacional.
+- Com `getpid()`, o servidor mostra esse número para que o cliente possa enviar sinais especificamente para ele, com a função `kill()`.
+
+Exemplo:
+```C
+    ft_printf("Server PID: %d\n", getpid());
+```
+>***Isso imprime algo como: `Server PID: 12345`***
+>
+>***O cliente usa esse `12345` para saber para onde mandar os sinais.***
+
+## signal() e pause() 🔁
+
+```C
+signal(SIGUSR1, handle_signal);
+signal(SIGUSR2, handle_signal);
+```
+    - Aqui o servidor está dizendo:
+        - "Quando eu receber SIGUSR1 ou SIGUSR2, execute a função handle_signal()."
+
+```C
+while (1)
+    ;
+```
+    - nao usamos o`pause()` faz o programa esperar até receber um sinal. pq ele faz confusao demora mais..
+        - Isso mantém o servidor parado, escutando.
+
+## handle_signal() – Como os bits viram letras? 📬
+A mágica acontece aqui:
+```C
+void handle_signal(int sig)
+{
+    static unsigned char c;
+    static int bit = 0;
+
+    if (sig == SIGUSR2)
+        c |= (1 << (7 - bit));
+    bit++;
+    if (bit == 8)
+    {
+        if (c == '\0')
+            write(1, "\n", 1);
+        else
+            write(1, &c, 1);
+        c = 0;
+        bit = 0;
+    }
+}
+```
+Vamos destrinchar:
+
+### Por que unsigned char? 🧮
+```C
+static unsigned char c;
+```
+    - Um char comum armazena de -128 a 127
+    - Um unsigned char armazena de 0 a 255
+    - Como estamos construindo valores binários de 8 bits (1 byte), queremos usar todos os 256 valores possíveis — por isso usamos unsigned.
+    - Também evita problema com sinal negativo (bit mais à esquerda = sinal).
+
+### Como o bit é montado? 🔀
+```C
+if (sig == SIGUSR2)
+    c |= (1 << (7 - bit));
+```
+- Aqui, se o sinal for SIGUSR2, ele representa o bit `1`.
+- `1 << (7 - bit)` move o bit `1` para a posição correta.
+- O operador `|=` (bitwise OR) ***ativa aquele bit*** em c.
+
+### Exemplo prático: caractere 42 (binário `00101010`)
+Entenda o que ta acontecendo na tabela e muito importante saber como `MONTA` os bits na minitalk
+
+| bit atual | sinal recebido | operação     | resultado binário parcial | explicação                           |
+|-----------|----------------|--------------|----------------------------|--------------------------------------|
+| 0         | SIGUSR1        | (nenhuma)    | 00000000                   | Bit 7 é 0, então nada muda           |
+| 1         | SIGUSR1        | (nenhuma)    | 00000000                   | Bit 6 é 0, mantém                    |
+| 2         | SIGUSR2        | `1 << 5`     | 00100000                   | Ativa o bit 5                       |
+| 3         | SIGUSR1        | (nenhuma)    | 00100000                   | Bit 4 é 0, mantém                    |
+| 4         | SIGUSR2        | `1 << 3`     | 00101000                   | Ativa o bit 3                       |
+| 5         | SIGUSR1        | (nenhuma)    | 00101000                   | Bit 2 é 0, mantém                    |
+| 6         | SIGUSR2        | `1 << 1`     | 00101010                   | Ativa o bit 1                       |
+| 7         | SIGUSR1        | (nenhuma)    | 00101010                   | Bit 0 é 0, mantém                    |
+
+🧠 Resultado final: `00101010` em binário = **42** em decimal = caractere `*`
+
+###  O que acontece depois de 8 bits? 🎯
+```C
+bit++;
+if (bit == 8)
+```
+- Quando 8 bits foram recebidos, significa que temos 1 caractere completo.
+
+```c
+if (c == '\0')
+    write(1, "\n", 1);
+else
+    write(1, &c, 1);
+```
+- Se for \0, é o fim da string → quebra de linha.
+- Se for outro caractere, escreve na tela.
+
+Depois, zera tudo pra começar a montar o próximo caractere:
+```C
+c = 0;
+bit = 0;
+```
+### 🧠 Conclusão
+O `server.c` funciona como um tradutor de sinais em texto:
+- Ele recebe sinais `SIGUSR1` e `SIGUSR2` representando bits `0` e `1`
+- Monta um byte `(unsigned char)` com 8 sinais
+- Imprime o caractere correspondente na tela
+- Repete isso até que receba o caractere `\0`

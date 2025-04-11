@@ -1,0 +1,98 @@
+---
+sidebar_position: 1
+---
+
+# Minitalk 🧠💬
+
+## O que faz esse projeto?
+
+O **Minitalk** é um projeto da 42 que tem como objetivo criar um sistema de comunicação entre dois programas: um **cliente** e um **servidor**, usando **sinais UNIX** para transmitir mensagens, bit a bit.
+
+Você vai aprender a:
+- Trabalhar com sinais (`SIGUSR1` e `SIGUSR2`)
+- Lidar com processos em C
+- Implementar uma forma básica de comunicação entre processos (IPC)
+- Tratar erros de forma rigorosa
+- Cuidar da gestão de memória (sem leaks!)
+
+---
+
+## Instruções do Projeto
+
+### 🧾 Regras Gerais
+
+- Os executáveis devem se chamar **`client`** e **`server`**.
+- Você precisa entregar um **Makefile** que compile seus arquivos corretamente (sem *relink* desnecessário).
+- É permitido usar sua **libft**.
+- O programa deve tratar erros de forma robusta:
+  - Nada de *segmentation fault*, *double free*, etc.
+- Não pode haver **memory leaks**.
+- Você pode ter **uma variável global por programa** (uma no cliente e uma no servidor), mas precisa justificar seu uso.
+
+---
+
+### ✅ Funções Permitidas
+
+Você **só** pode usar essas funções:
+
+- `write`
+- `ft_printf` (ou uma equivalente que **você mesmo escreveu**)
+- `signal`
+- `sigemptyset`
+- `sigaddset`
+- `sigaction`
+- `kill`
+- `getpid`
+- `malloc`
+- `free`
+- `pause`
+- `sleep`
+- `usleep`
+- `exit`
+
+---
+
+## Parte Obrigatória 💻
+
+### Como funciona?
+
+Você precisa criar um sistema de comunicação com dois programas: **cliente** e **servidor**.
+
+### 🖥️ Servidor
+
+- Deve ser iniciado **primeiro**.
+- Ao iniciar, imprime seu **PID** (Process ID) no terminal.
+- Deve ser capaz de receber **várias mensagens de clientes diferentes**, sem precisar ser reiniciado.
+- Quando receber uma mensagem, deve imprimi-la **rapidamente**.
+- Compile com as flags:
+
+ **-Wall**: mostra todos os warnings.
+
+ **-Wextra**: mostra warnings extras.
+
+ **-Werror**: trata warnings como erros.
+
+⚠️ Exemplo de lentidão a evitar:
+> Se demorar **1 segundo para exibir 100 caracteres**, está lento demais!
+
+---
+
+### 📲 Cliente
+
+- Deve receber **dois parâmetros**:
+  1. O **PID do servidor**
+  2. A **string** que deseja enviar
+- Ele deve enviar essa string para o servidor, usando **apenas sinais**.
+
+---
+
+### 🔄 Comunicação via Sinais
+
+A comunicação entre cliente e servidor deve ser feita **apenas usando sinais UNIX**.
+
+Você só pode usar os seguintes sinais:
+- `SIGUSR1`
+- `SIGUSR2`
+
+💡 A ideia é codificar cada caractere da string em bits (0 e 1) e enviar cada bit como um sinal. O servidor reconstrói a mensagem a partir desses sinais.
+

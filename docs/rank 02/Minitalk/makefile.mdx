@@ -1,0 +1,57 @@
+---
+sidebar_position: 2
+---
+
+# Makefile do Minitalk 🛠️
+
+Este é o `Makefile` usado no projeto **minitalk**, responsável por compilar os arquivos `server.c`, `client.c` e a `libft`, além de gerar uma biblioteca `minitalk.a`.
+
+---
+
+## Makefile
+
+```javascript
+NAME = minitalk.a  // Define o nome da biblioteca que será criada com os objetos (.o) do projeto.
+
+LIBFT_PATH= libft/
+LIBFT_A = $(LIBFT_PATH)/libft.a //Define o caminho da libft (LIBFT_PATH) e a localização da biblioteca libft.a dentro desse caminho.
+
+SRC = client.c server.c
+OBJ = $(SRC:.c=.o) //Lista os arquivos .c do projeto (client.c e server.c), e cria uma nova lista substituindo .c por .o, que são os arquivos objeto.
+
+FLAG = -Wall -Wextra -Werror //Define as flags do compilador
+
+RM = rm -rf //Atalho para o comando de remoção, usado para limpar arquivos.
+
+all: $(NAME) server client //Regra padrão: chama a criação da biblioteca (minitalk.a) e também compila os executáveis server e client.
+
+$(NAME): $(OBJ) $(LIBFT_A) //Gera a biblioteca minitalk.a usando os arquivos objeto.
+        ar -rc $(NAME) $(OBJ) //ar -rc cria ou atualiza a biblioteca com os arquivos .o.
+
+server: server.o $(LIBFT_A)
+        $(CC) $(FLAG) -o server server.o $(LIBFT_A) //Compila o server com os objetos necessários e a libft.
+
+client: client.o $(LIBFT_A)
+        $(CC) $(FLAG) -o client client.o $(LIBFT_A) //Compila o client da mesma forma.
+
+.c.o:
+        $(CC) $(CFLAGS) -c $< -o $(<:.c=.o) //Compila qualquer arquivo .c em .o.  $< é o nome do arquivo de entrada. $(<:.c=.o) troca a extensão para .o.
+
+$(LIBFT_A):
+        make -C libft //Entra no diretório da libft e executa o make para compilar a biblioteca.
+
+clean:
+        rm -f $(OBJ)
+        make -C libft clean
+        $(RM) $(OBJ) //Remove todos os arquivos objeto do projeto e da libft.
+
+fclean: clean
+        make -C libft fclean
+        $(RM) $(NAME) server client //Essa regra faz uma limpeza completa no projeto depois executa make fclean dentro do diretório da libft para limpar os arquivos da biblioteca.
+
+re: fclean all //A regra re limpa tudo com fclean e recompila com all.
+
+.PHONY: all clean fclean re //Define que essas regras não são arquivos, mesmo que exista um arquivo chamado all, clean, etc. Isso garante que o make execute as regras mesmo se arquivos com esses nomes existirem.
+
+```
+Lembre-se de colocar tudo na norma =)
