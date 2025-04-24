@@ -1,0 +1,85 @@
+---
+sidebar_position: 3
+---
+# Verificacao de argumentos 🧠
+
+## Validação e Processamento de Argumentos - verify_arguments.c
+
+Este arquivo é responsável por garantir que os argumentos fornecidos para o programa sejam válidos, convertê-los em números inteiros, e armazená-los de forma segura para que o restante do programa possa utilizá-los (especialmente o algoritmo de ordenação, como o Radix Sort).
+
+## 📌 Visão geral
+
+Antes de qualquer ordenação, precisamos:
+
+- Validar se os argumentos são números válidos;
+- Garantir que não há duplicatas;
+- Garantir que estão dentro dos limites de um int;
+- Lidar com argumentos passados como "1 2 3" ou como "1" "2" "3".
+
+## 🔍 Código completo com explicações por partes
+
+```C check_digits
+int check_digits(char *str)
+```
+Objetivo: Verifica se uma string contém apenas dígitos numéricos (com um sinal opcional no início).
+Detalhes:
+
+- Permite + ou - no início da string.
+- Retorna 1 (erro) se:
+
+        Algum caractere não for número.
+
+        Se o último caractere for um sinal (+ ou -), ou seja, sinal sem número.
+
+```C verify_equals
+int verify_equals(long long *numbers, int count)
+```
+Objetivo: Garante que os números inseridos não sejam repetidos.
+Detalhes:
+- Compara todos os pares da lista de números.
+- Se dois números forem iguais, retorna erro (1).
+
+```C process_numbers
+int process_numbers(char **numbers, long long *numbers_list, int *count)
+```
+Objetivo: Processa uma lista de strings numéricas (como ["1", "2", "3"]), valida e armazena em um array numbers_list.
+Detalhes:
+
+- Verifica se cada string é válida com check_digits.
+- Converte com ft_atol e verifica se está dentro do intervalo de um int.
+
+    Se tudo estiver ok, adiciona ao numbers_list e atualiza count.
+
+```C process_argument
+int process_argument(char *arg, long long *numbers_list, int *count)
+```
+Objetivo: Lida com cada argumento individual (do argv).
+Casos tratados:
+
+- Se o argumento contiver espaço ("1 2 3"), ele é dividido com ft_split.
+- Cada parte é processada com process_numbers.
+- Se for um argumento simples ("42"), ele é validado e convertido diretamente.
+- Se qualquer parte falhar, retorna erro.
+
+```C verify_arguments
+long long *verify_arguments(int ac, char **av, int *count)
+```
+Objetivo: Função principal chamada no main() para validar todos os argumentos recebidos.
+Detalhes:
+
+- Cria um array numbers_list suficientemente grande.
+- Percorre os argumentos (ignorando o primeiro, que é o nome do programa).
+- Usa process_argument para validar cada um.
+- Por fim, chama verify_equals para evitar duplicatas.
+- Se tudo estiver correto, retorna a lista de números prontos para uso.
+
+## 🧹 Função extra: free_resources
+
+Embora não esteja neste arquivo, essa função aparece várias vezes. Ela serve para liberar memória em caso de erro — essencial para evitar vazamentos de memória durante as validações.
+💡 Conclusão
+
+O verify_arguments.c é essencial para garantir que os dados de entrada estejam corretos antes de rodar qualquer algoritmo de ordenação. Isso é fundamental no projeto push_swap, onde:
+
+- Entradas erradas devem gerar erro.
+- Valores inválidos (como "42a" ou "999999999999") são rejeitados.
+- O programa lida corretamente tanto com argumentos únicos quanto com múltiplos valores em uma única string.

@@ -1,0 +1,120 @@
+---
+sidebar_position: 1
+---
+
+# Push Swap 📊🔃
+
+## O que faz esse projeto?
+
+O **push_swap** é um projeto da 42 cujo objetivo é desenvolver um algoritmo de ordenação utilizando apenas operações específicas sobre duas pilhas. Você terá que lidar com a lógica de ordenação, a otimização do número de operações e o entendimento da complexidade de algoritmos.
+
+Esse projeto é uma excelente introdução à análise de complexidade e ao uso rigoroso da linguagem C.
+
+---
+
+### Você vai aprender a:
+
+- Entender e aplicar conceitos de complexidade algorítmica
+- Manipular pilhas com operações limitadas
+- Pensar de forma lógica e estratégica para reduzir o número de operações
+- Lidar com números negativos e positivos (sem repetições)
+- Criar um programa robusto com boa gestão de memória
+
+---
+
+## 🧾 Instruções do Projeto
+
+### Regras Gerais
+
+- Os executáveis devem se chamar `push_swap`.
+- Você precisa entregar um `Makefile` que compile corretamente seus arquivos sem relinks desnecessários.
+- Não é permitido o uso de variáveis globais.
+- A `libft` é autorizada.
+- O programa deve tratar erros de forma rigorosa:
+- Nada de segmentation fault, double free, etc.
+- Nenhum memory leak é permitido.
+
+---
+
+### ✅ Funções Permitidas
+
+Você só pode usar as seguintes funções:
+
+- `read`
+- `write`
+- `malloc`
+- `free`
+- `exit`
+- `ft_printf` (ou equivalente feito por você)
+
+---
+
+## Parte Obrigatória 💻
+
+### Como funciona?
+
+Você deve implementar um programa que recebe uma lista de inteiros (a pilha `a`) e imprime no terminal a menor sequência possível de instruções para ordenar essa pilha.
+
+---
+
+## 🧱 Estrutura
+
+### Pilhas
+
+- Duas pilhas: `a` e `b`.
+- Inicialmente:
+- A pilha `a` contém uma quantidade aleatória de números inteiros (positivos e negativos, **sem duplicatas**).
+- A pilha `b` começa vazia.
+
+---
+
+### Objetivo
+
+Ordenar todos os elementos da pilha `a` em ordem **crescente**, utilizando o menor número possível de instruções permitidas.
+
+---
+
+## 🔧 Instruções Disponíveis
+
+### Swaps
+- `sa`: Troca os dois primeiros elementos do topo da pilha `a`.
+- `sb`: Troca os dois primeiros elementos do topo da pilha `b`.
+- `ss`: Executa `sa` e `sb` ao mesmo tempo.
+
+### Push
+- `pa`: Move o primeiro elemento do topo da pilha `b` para o topo da pilha `a`.
+- `pb`: Move o primeiro elemento do topo da pilha `a` para o topo da pilha `b`.
+
+### Rotação (Shift para cima)
+- `ra`: Roda todos os elementos da pilha `a` uma posição para cima (o topo vai para o final).
+- `rb`: Roda todos os elementos da pilha `b` uma posição para cima.
+- `rr`: Executa `ra` e `rb` ao mesmo tempo.
+
+### Rotação Reversa (Shift para baixo)
+- `rra`: Roda todos os elementos da pilha `a` uma posição para baixo (o final vai para o topo).
+- `rrb`: Roda todos os elementos da pilha `b` uma posição para baixo.
+- `rrr`: Executa `rra` e `rrb` ao mesmo tempo.
+
+---
+
+## 📂 Informações Técnicas
+
+- **Nome do Programa**: `push_swap`
+- **Arquivos a Entregar**: `Makefile`, `*.h`, `*.c`
+- **Targets do Makefile**: `NAME`, `all`, `clean`, `fclean`, `re`
+- **Argumentos esperados**: Lista de inteiros (stack `a`), com o **primeiro argumento sendo o topo da pilha**
+
+---
+
+## 📋 Requisitos
+
+- O programa deve imprimir a menor sequência possível de instruções que ordena a pilha `a`.
+- As instruções devem ser separadas por **`\n`** e **nada mais**.
+- A ordem dos elementos no argumento define a ordem na pilha (o primeiro argumento é o topo da pilha).
+- A execução do programa será validada com o checker da 42 (`checker_OS`):
+- `OK`: Tudo certo!
+- `KO`: A sequência de instruções não ordena corretamente a pilha.
+
+---
+
+> ⚠️ Atenção: A performance do seu algoritmo importa! Menos instruções = melhor implementação.

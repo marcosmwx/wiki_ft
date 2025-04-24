@@ -1,0 +1,58 @@
+---
+sidebar_position: 4
+---
+
+# 📂 assign_index.c
+🧠 Objetivo do Arquivo
+
+O papel desse arquivo é atribuir um índice ordenado a cada elemento da pilha. Esses índices representam a posição relativa de cada número se os elementos fossem ordenados.
+Essa transformação é crucial para aplicar o Radix Sort, pois o algoritmo trabalha melhor com valores sequenciais e pequenos (como índices), ao invés de números inteiros arbitrários.
+
+## 🔢 Etapas do Código
+### 1. Copiando os valores da pilha para um array
+```C
+static int	*copy_stack_to_array(t_node *stack, int size)
+```
+
+Essa função percorre a pilha (t_node *stack) e cria um array simples com os valores.
+Isso é necessário porque é muito mais fácil ordenar um array do que uma lista encadeada.
+
+### 2. Ordenando o array (Bubble Sort)
+```C
+static void	sort_array(int *arr, int size)
+```
+
+Aqui o array é ordenado usando o algoritmo Bubble Sort.
+Apesar de não ser o algoritmo mais eficiente, ele é suficiente para uma pequena quantidade de elementos (como é o caso do push_swap).
+
+### 3. Atribuindo índices aos nós da pilha
+```C
+void	assign_indexes(t_node *stack)
+```
+    Primeiro, a pilha é copiada para o array e ordenada.
+
+    Depois, para cada elemento da pilha, o código procura seu valor no array ordenado.
+
+    Quando encontra, atribui o índice correspondente ao campo stack->index.
+```markdown
+Exemplo:
+
+Valores originais: 12 3 20
+Array ordenado:    3 12 20
+Índices atribuídos: 1 0 2
+```
+
+Isso significa que o valor 12 recebe índice 1, pois ele é o segundo menor número da lista.
+✅ Vantagens dessa abordagem
+
+    Radix Sort não depende dos valores reais, apenas da representação binária dos índices.
+
+    Como todos os índices são garantidamente distintos, entre 0 e N-1, o algoritmo pode rodar sem colisões.
+
+    O uso de índices também evita problemas com valores negativos.
+
+### 🧼 Resumo final
+Função	Descrição
+- copy_stack_to_array	Copia os valores da pilha para um array.
+- sort_array	Ordena esse array para descobrir a ordem crescente.
+- assign_indexes	Atribui a cada nó da pilha seu índice no array ordenado.

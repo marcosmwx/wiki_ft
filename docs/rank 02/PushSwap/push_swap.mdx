@@ -1,0 +1,191 @@
+---
+sidebar_position: 2
+---
+
+# push_swap 🧠📦
+
+## ✨ Introdução ao Radix Sort
+
+O **Radix Sort** é um algoritmo de ordenação não comparativo que organiza os números a partir dos seus dígitos, da menor casa (menos significativa) até a maior. No contexto do `push_swap`, ele é usado para ordenar eficientemente pilhas grandes, minimizando o número de operações. O algoritmo é ideal para este projeto, pois oferece uma complexidade de tempo linear em muitos casos práticos — `O(n * k)` onde `n` é o número de elementos e `k` o número de dígitos no maior número.
+
+## 🗂️ O que faz o arquivo `push_swap.c`?
+
+O arquivo `push_swap.c` é o ponto de entrada da aplicação. Ele é responsável por:
+
+- Validar os argumentos passados na linha de comando.
+- Criar as pilhas `a` e `b`.
+- Iniciar o processo de ordenação com base no tamanho da pilha.
+- Selecionar o algoritmo de ordenação apropriado (`sort_three`, `sort_four`, `sort_five`, ou `radix_sort`).
+- Gerenciar a liberação de memória.
+
+---
+
+## 🧾 Código completo: `push_swap.c`
+
+```c
+static int	get_min_index(t_node *stack)
+{
+	int	index;
+	int	i;
+	int	min;
+
+	min = stack->value;
+	i = 0;
+	index = 0;
+	while (stack)
+	{
+		if (stack->value < min)
+		{
+			min = stack->value;
+			index = i;
+		}
+		stack = stack->next;
+		i++;
+	}
+	return (index);
+}
+
+static void	sort_four(t_node **a, t_node **b)
+{
+	int min_index;
+
+	min_index = get_min_index(*a);
+	while (min_index > 0)
+	{
+		if (min_index <= 2)
+			ra(a);
+		else
+			rra(a);
+		min_index = get_min_index(*a);
+	}
+	pb(a, b);
+	sort_three(a);
+	pa(a, b);
+}
+
+static void	sort_five(t_node **a, t_node **b)
+{
+	int min_index;
+
+	while (stack_size(*a) > 3)
+	{
+		min_index = get_min_index(*a);
+		while (min_index > 0)
+		{
+			if (min_index <= stack_size(*a) / 2)
+				ra(a);
+			else
+				rra(a);
+			min_index = get_min_index(*a);
+		}
+		pb(a, b);
+	}
+	sort_three(a);
+	while (*b)
+		pa(a, b);
+}
+
+static int is_sorted(t_node *stack)
+{
+    while (stack && stack->next)
+    {
+        if (stack->value > stack->next->value)
+            return (0);
+        stack = stack->next;
+    }
+    return (1);
+}
+
+static void do_sort(t_node **a, t_node **b)
+{
+	if (!is_sorted(*a))
+	{
+		if (stack_size(*a) == 2 && (*a)->value > (*a)->next->value)
+			sa(a);
+		else if (stack_size(*a) == 3)
+			sort_three(a);
+		else if (stack_size(*a) == 4)
+			sort_four(a, b);
+		else if (stack_size(*a) == 5)
+			sort_five(a, b);
+		else
+		{
+			assign_indexes(*a);
+			radix_sort(a, b);
+		}
+	}
+	free_stack(a);
+	free_stack(b);
+}
+
+int	main(int argc, char **argv)
+{
+	t_node		*a = NULL;
+	t_node		*b = NULL;
+	long long	*numbers_list;
+	int			count;
+	int			i;
+
+	count = 0;
+	i = -1;
+	if (argc < 2)
+	{
+		write(2, "Error\n", 6);
+		return (0);
+	}
+	numbers_list = verify_arguments(argc, argv, &count);
+	if (!numbers_list)
+	{
+		write(2, "Error\n", 6);
+		return (0);
+	}
+	while (++i < count)
+		ft_add_last(&a, (int)numbers_list[i]);
+	do_sort(&a, &b);
+	free(numbers_list);
+	return (0);
+}
+```
+
+## 🧠 Explicação Detalhada
+
+### 🧩 get_min_index
+
+Essa função percorre a pilha e retorna o índice do menor valor. É útil para saber qual elemento deve ser movido primeiro em ordenações pequenas.
+
+
+### 🔢 sort_four e sort_five
+
+Funções específicas para ordenar 4 e 5 elementos. A lógica é:
+
+    Encontrar o menor elemento e movê-lo para a pilha b.
+
+    Ordenar os elementos restantes com sort_three.
+
+    Trazer o menor de volta para a.
+
+### ✅ is_sorted
+
+Verifica se a pilha já está ordenada em ordem crescente. Se sim, evita realizar operações desnecessárias.
+🧮 do_sort
+
+Seleciona qual algoritmo aplicar com base na quantidade de elementos:
+
+    2 elementos: swap direto com sa.
+
+    3 a 5 elementos: ordenações específicas com lógica baseada em ra, rra, pb, pa.
+
+    Mais de 5 elementos: converte os valores em índices e aplica o Radix Sort.
+
+Além disso, garante liberação da memória após a ordenação.
+### 🧱 main
+
+    Verifica se há argumentos suficientes.
+
+    Valida e converte os argumentos para inteiros.
+
+    Cria a pilha a.
+
+    Chama do_sort para iniciar a ordenação.
+
+    Libera os recursos usados.

@@ -1,0 +1,141 @@
+---
+sidebar_position: 5
+---
+
+# 📦 radix_sort.c
+Entendendo a lógica passo a passo
+
+## 🎯 Objetivo do arquivo
+Esse arquivo implementa o algoritmo Radix Sort para ordenar os elementos de uma pilha (stack a) usando operações restritas do projeto push_swap.
+
+## 🧠 O que é Radix Sort?
+Radix Sort é um algoritmo de ordenação que não compara valores diretamente.
+
+Ele ordena os elementos com base na representação binária (ou decimal) de cada número, bit a bit (ou dígito a dígito), do menos significativo para o mais significativo.
+- É como organizar números por cada casa decimal, mas aqui usamos bits (0s e 1s).
+
+## 🔍 Exemplo prático:
+Imagine que temos os índices (já atribuídos anteriormente) na stack:
+
+```mdxjs
+Stack A (valores):     [12, 5, 3, 8]
+Stack A (índices):     [3, 1, 0, 2]  ⬅️ pois é a ordem crescente dos valores
+
+Representação binária:
+3 = 011
+1 = 001
+0 = 000
+2 = 010
+```
+
+Cada número tem 3 bits. Então o Radix Sort vai realizar 3 passes:
+
+## 🧩 Fase 1 — Bit 0 (menos significativo):
+
+```mdxjs
+Verifica o bit 0 (direita):
+
+011 → 1
+001 → 1
+000 → 0
+010 → 0
+```
+```mdxjs
+Dividimos os elementos:
+
+    bit = 0: mandamos para stack B → pb
+
+    bit = 1: rotacionamos em A → ra
+```
+```mdxjs
+Resultado:
+
+Stack A: [3, 1]  ⬅️ ainda não ordenado, mas com bit 1
+Stack B: [0, 2]  ⬅️ bit 0
+```
+```mdxjs
+Depois voltamos todos da B → A com pa.
+🔄 Fase 2 — Bit 1:
+```
+
+Agora olhamos o segundo bit da direita.
+
+Repetimos o processo. Assim, cada vez mais os elementos se aproximam da ordem correta.
+No fim das 3 fases (porque temos até 3 bits), a pilha estará ordenada por índices, ou seja, ordenada pelos valores originais.
+
+## 🛠️ Explicando o Código
+### 🔹 get_max_bits
+
+```C
+static int get_max_bits(t_node *stack)
+```
+
+Essa função calcula quantos bits são necessários para representar o maior índice da pilha.
+```mdxjs
+Exemplo:
+Se o maior índice é 6
+→ 6 em binário é 110
+→ precisa de 3 bits
+```
+
+```C
+while ((max_index >> bits) != 0)
+bits++;
+```
+
+Aqui usamos o operador de bit shift (>>) para ir deslocando os bits até sobrar 0, contando quantos bits foram usados.
+
+### 🔹 radix_sort
+
+```C
+void radix_sort(t_node **a, t_node **b)
+```
+
+Essa função executa o Radix Sort real, com base nos bits:
+
+🔄 Loop externo:
+
+```C
+while (i < max_bits)
+```
+
+→ repete para cada bit (0, 1, 2, ...)
+
+🔁 Loop interno:
+```C
+while (j < size)
+```
+→ para cada elemento da pilha, analisamos o bit i atual com:
+
+```C
+if (((*a)->index >> i) & 1)
+```
+*`>> i`: desloca os bits para a direita i vezes.*
+
+*`& 1`: verifica se o bit atual é 1.*
+
+- Se for 1: fazemos ra (rotate a) → mantemos em A.
+- Se for 0: fazemos pb (push para B) → mandamos para a "espera".
+
+🔚 No fim de cada fase:
+```C
+while (*b)
+pa(a, b);
+```
+
+Recolocamos tudo de volta da stack B para A, prontos para o próximo bit.
+
+### 🎯 Por que usar bits?
+✅ Vantagens:
+
+- É determinístico e estável.
+- Funciona muito bem quando os números são pequenos e sequenciais (como os índices que já criamos).
+- Evita comparações e facilita muito dentro das restrições do push_swap (que só permite algumas operações).
+
+### 🔚 Conclusão
+| Conceito         | Função                                                                 |
+|------------------|------------------------------------------------------------------------|
+| **Bit manipulation** | Usada para isolar cada bit individual e decidir o que fazer com o número. |
+| **Stack A e B**       | A: principal. B: temporária para segregar elementos.                    |
+| **Índice**            | Já está atribuído com base na ordem dos valores, e o Radix ordena com base nisso. |
+| **Complexidade**      | `O(n * log n)` nos melhores casos com índices — muito bom para nosso cenário. |
